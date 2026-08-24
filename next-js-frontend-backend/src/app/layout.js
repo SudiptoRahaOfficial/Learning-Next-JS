@@ -1,8 +1,9 @@
 import '../styles/globals.css'
 
 export const metadata = {
-	title: 'Learning Next JS',
-	description: 'Next js learning project',
+	title: 'Learning Full-stack Next JS',
+	description:
+		'Next js learning project. This is a full-stack project that build while learning full-stack development with next.js.',
 }
 
 export default function RootLayout({ children }) {
