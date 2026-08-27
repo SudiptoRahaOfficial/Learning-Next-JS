@@ -1,10 +1,12 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import connectDB from './dbConnection'
 import User from '@/models/User.model'
-import { signIn } from 'next-auth/react'
+import bcrypt from 'bcryptjs'
+import Google from 'next-auth/providers/google'
 
 const authOptions = {
 	providers: [
+		// authentication with credentials
 		CredentialsProvider({
 			name: 'Credentials',
 			credentials: {
@@ -47,8 +49,15 @@ const authOptions = {
 				}
 			},
 		}),
+
+		// authentication with oAuth - Google
+		Google({
+			clientId: process.env.GOOGLE_CLIENT_ID,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+		}),
 	],
 	callbacks: {
+		// function for jwt token generation
 		async jwt({ token, user }) {
 			if (user) {
 				token.id = user.id
@@ -58,6 +67,8 @@ const authOptions = {
 			}
 			return token
 		},
+
+		// function for making session
 		session({ session, token }) {
 			if (session.user) {
 				session.user.id = token.id
@@ -66,6 +77,28 @@ const authOptions = {
 				session.user.image = token.image
 			}
 			return session
+		},
+
+		// function for auto registration while log in with google
+		async signIn(account, user) {
+			if (account?.provider === 'google') {
+				// connecting database
+				await connectDB()
+
+				// finding user to db by email
+				const existUser = await User.findOne({ email: user?.email })
+
+				// if user not exists then creating new user
+				if (!existUser) {
+					let newUser = await User.create({
+						name: user?.name,
+						email: user?.email,
+					})
+				}
+				user.id = existUser._id
+			}
+
+			return true
 		},
 	},
 	session: {
