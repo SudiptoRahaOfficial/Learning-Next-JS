@@ -1,10 +1,26 @@
 'use client'
 import Loader from '@/components/Loader'
-import { useSession } from 'next-auth/react'
+import { useState } from 'react'
+import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 
 export default function Home() {
 	const { data } = useSession()
+
+	// state for loader
+	const [loading, setLoading] = useState(false)
+
+	// function for handling logout
+	async function handleLogOut() {
+		setLoading(true)
+		try {
+			await signOut()
+			setLoading(false)
+		} catch (error) {
+			setLoading(false)
+			console.log(error)
+		}
+	}
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-black text-white px-4'>
@@ -29,8 +45,11 @@ export default function Home() {
 							You are now logged in and can access all features
 						</p>
 					</div>
-					<button className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors cursor-pointer'>
-						Sign Out
+					<button
+						onClick={handleLogOut}
+						className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors cursor-pointer'
+					>
+						Log Out
 					</button>
 				</div>
 			) : (
