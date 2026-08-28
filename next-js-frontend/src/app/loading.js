@@ -11,7 +11,7 @@ export default function Loading() {
 				</h2>
 
 				<p className='text-gray-500 mt-2 text-lg'>
-					Please wait while we load the products.
+					Please wait while loading the page content.
 				</p>
 
 				{/* Decorative Line */}
