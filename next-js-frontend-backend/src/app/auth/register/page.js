@@ -11,6 +11,9 @@ function Register() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
+	// using useRouter hook for navigate
+	const router = useRouter()
+
 	// function for handling registration & api calling
 	async function handleRegister(event) {
 		// preventing default form behavior
@@ -24,17 +27,17 @@ function Register() {
 				password,
 			})
 
-			// reseting form fields
-			setName('')
-			setEmail('')
-			setPassword('')
+			// redirecting user to login page
+			router.push('/auth/login')
 		} catch (error) {
 			console.log(error)
 		}
 	}
 
-	// using useRouter hook for navigate
-	const router = useRouter()
+	// function for handling oAuth
+	async function handleOAuth() {
+		await signIn('google', { callbackUrl: '/auth/login' })
+	}
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-black text-white px-4'>
@@ -120,7 +123,7 @@ function Register() {
 
 				{/* oAuth - Google */}
 				<button
-					onClick={() => signIn('google')}
+					onClick={handleOAuth}
 					className='w-full items-center justify-center py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-200 transition-colors cursor-pointer'
 				>
 					<FcGoogle className='inline text-2xl mr-2' />

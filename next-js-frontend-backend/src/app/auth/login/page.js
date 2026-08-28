@@ -1,5 +1,5 @@
 'use client'
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { FcGoogle } from 'react-icons/fc'
@@ -9,6 +9,9 @@ function Login() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
+	// using useRouter hook for navigate
+	const router = useRouter()
+
 	// function for handling login & api calling
 	async function handleLogin(event) {
 		// preventing default form behavior
@@ -16,22 +19,29 @@ function Login() {
 
 		try {
 			// handling login throw next-auth
-			await signIn('credentials', { email, password })
+			const result = await signIn('credentials', {
+				email,
+				password,
+				redirect: false,
+			})
 
-			// reseting form fields
-			setEmail('')
-			setPassword('')
+			// if result has any error
+			if (result?.error) {
+				console.log(result.error)
+				return
+			}
+
+			// redirecting user to home page
+			router.push('/')
 		} catch (error) {
 			console.log(error)
 		}
 	}
 
-	// using useRouter hook for navigate
-	const router = useRouter()
-
-	// using useSession hook
-	const session = useSession()
-	console.log(session?.data)
+	// function for handling oAuth
+	async function handleOAuth() {
+		await signIn('google', { callbackUrl: '/' })
+	}
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-black text-white px-4'>
@@ -101,7 +111,7 @@ function Login() {
 
 				{/* oAuth - Google */}
 				<button
-					onClick={() => signIn('google')}
+					onClick={handleOAuth}
 					className='w-full items-center justify-center py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-200 transition-colors cursor-pointer'
 				>
 					<FcGoogle className='inline text-2xl mr-2' />
