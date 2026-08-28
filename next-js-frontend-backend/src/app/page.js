@@ -3,6 +3,8 @@ import Loader from '@/components/Loader'
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
+import { FaEdit } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
 	const { data } = useSession()
@@ -22,10 +24,19 @@ export default function Home() {
 		}
 	}
 
+	// router for navigation
+	const router = useRouter()
+
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-black text-white px-4'>
 			{data ? (
 				<div className='w-full max-w-md border-2 border-white rounded-2xl p-8 shadow-lg text-center relative flex flex-col items-center justify-center'>
+					<FaEdit
+						onClick={() => router.push('/edit')}
+						size={20}
+						color='white'
+						className='absolute top-4 right-4 cursor-pointer'
+					/>
 					{data?.user?.image && (
 						<div className='relative w-30 h-30 rounded-full border-2 border-white overflow-hidden'>
 							<Image
