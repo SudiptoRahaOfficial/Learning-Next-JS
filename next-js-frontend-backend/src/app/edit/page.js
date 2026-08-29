@@ -17,6 +17,9 @@ export default function Edit() {
 	const [frontendImage, setFrontendImage] = useState('')
 	const [backendImage, setBackendImage] = useState()
 
+	// state for loading
+	const [loading, setLoading] = useState(false)
+
 	// ref of image input
 	const imageInput = useRef(null)
 
@@ -41,6 +44,9 @@ export default function Edit() {
 		// preventing form's default behavior
 		event.preventDefault()
 
+		// starting loading
+		setLoading(true)
+
 		try {
 			// making formData for sending to api
 			const formData = new FormData()
@@ -51,6 +57,7 @@ export default function Edit() {
 
 			// fetching edit api
 			const result = await axios.post('/api/edit', formData)
+			setLoading(false)
 
 			// Update client-side user state
 			data.setUser(result.data)
@@ -58,6 +65,7 @@ export default function Edit() {
 			// Navigate after state update
 			router.push('/')
 		} catch (error) {
+			setLoading(false)
 			console.log(error)
 		}
 	}
@@ -129,8 +137,11 @@ export default function Edit() {
 					</div>
 
 					{/* save button */}
-					<button className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors cursor-pointer'>
-						Save
+					<button
+						className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors cursor-pointer'
+						disabled={loading}
+					>
+						{loading ? 'Saving...' : 'Save'}
 					</button>
 				</form>
 			</div>
