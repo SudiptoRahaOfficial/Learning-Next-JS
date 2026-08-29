@@ -1,14 +1,15 @@
 'use client'
 import Loader from '@/components/Loader'
-import { useState } from 'react'
-import { signOut, useSession } from 'next-auth/react'
+import { useContext, useState } from 'react'
+import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import { FaCircleUser } from 'react-icons/fa6'
 import { FaEdit } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
+import { userDataContext } from '@/context/UserContext'
 
 export default function Home() {
-	const { data } = useSession()
+	const data = useContext(userDataContext)
 
 	// state for loader
 	const [loading, setLoading] = useState(false)
