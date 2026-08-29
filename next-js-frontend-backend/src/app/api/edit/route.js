@@ -51,18 +51,7 @@ export async function POST(request) {
 		}
 
 		// finally success response back
-		return NextResponse.json(
-			{
-				message: 'Profile updated successfully.',
-				user: {
-					id: user._id,
-					name: user.name,
-					email: user.email,
-					image: user.image,
-				},
-			},
-			{ status: 200 },
-		)
+		return NextResponse.json(user, { status: 200 })
 	} catch (error) {
 		return NextResponse.json(
 			{ message: `server error : ${error}` },

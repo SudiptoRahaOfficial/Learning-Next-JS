@@ -1,13 +1,14 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { useSession } from 'next-auth/react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import Image from 'next/image'
 import { FaCircleUser } from 'react-icons/fa6'
 import axios from 'axios'
+import { userDataContext } from '@/context/UserContext'
+import { useRouter } from 'next/navigation'
 
 export default function Edit() {
-	// accessing session
-	const { data } = useSession()
+	const router = useRouter()
+	const data = useContext(userDataContext)
 
 	// state for name field change
 	const [name, setName] = useState('')
@@ -50,7 +51,12 @@ export default function Edit() {
 
 			// fetching edit api
 			const result = await axios.post('/api/edit', formData)
-			console.log(result)
+
+			// Update client-side user state
+			data.setUser(result.data)
+
+			// Navigate after state update
+			router.push('/')
 		} catch (error) {
 			console.log(error)
 		}
@@ -59,8 +65,8 @@ export default function Edit() {
 	// useEfect declaration
 	useEffect(() => {
 		if (data) {
-			setName(data?.user?.name)
-			setFrontendImage(data?.user?.image)
+			setName(data?.user?.name ?? '')
+			setFrontendImage(data?.user?.image ?? '')
 		}
 	}, [data])
 
