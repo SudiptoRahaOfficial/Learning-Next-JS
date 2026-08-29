@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { FaCircleUser } from 'react-icons/fa6'
@@ -8,15 +8,39 @@ export default function Edit() {
 	// accessing session
 	const { data } = useSession()
 
-	// states declaration
+	// state for name field change
 	const [name, setName] = useState('')
+
+	// states for profile picture change
+	const [frontendImage, setFrontendImage] = useState('')
+	const [backendImage, setBackendImage] = useState()
+
+	// ref of image input
+	const imageInput = useRef(null)
 
 	// useEfect declaration
 	useEffect(() => {
 		if (data) {
 			setName(data?.user?.name)
+			setFrontendImage(data?.user?.image)
 		}
 	}, [data])
+
+	// function for handling image changes
+	function handleImageChange(event) {
+		// extracting files from event
+		const files = event.target.files
+
+		// returning if files got empty
+		if (!files || files.length === 0) return
+
+		// extracting file and storing file to backendImage state
+		const file = files[0]
+		setBackendImage(file)
+
+		// setting changed file to frontend
+		setFrontendImage(URL.createObjectURL(file))
+	}
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-black text-white px-4'>
@@ -29,10 +53,20 @@ export default function Edit() {
 				{/* edit form */}
 				<form className='flex flex-col w-full items-center gap-6'>
 					{/* profile picture */}
-					<div className='relative w-30 h-30 rounded-full border-2 border-white text-white overflow-hidden cursor-pointer flex justify-center items-center transition-all hover:text-blue-500 hover:border-blue-500'>
-						{data?.user?.image ? (
+					<div
+						onClick={() => imageInput.current.click()}
+						className='relative w-30 h-30 rounded-full border-2 border-white text-white overflow-hidden cursor-pointer flex justify-center items-center transition-all hover:border-blue-500 hover:opacity-80'
+					>
+						<input
+							type='file'
+							accept='image/*'
+							hidden
+							ref={imageInput}
+							onChange={handleImageChange}
+						/>
+						{frontendImage ? (
 							<Image
-								src={data?.user?.image}
+								src={frontendImage}
 								alt='user-image'
 								loading='eager'
 								fill
