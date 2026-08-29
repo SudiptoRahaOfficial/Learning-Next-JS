@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { FaCircleUser } from 'react-icons/fa6'
+import axios from 'axios'
 
 export default function Edit() {
 	// accessing session
@@ -17,14 +18,6 @@ export default function Edit() {
 
 	// ref of image input
 	const imageInput = useRef(null)
-
-	// useEfect declaration
-	useEffect(() => {
-		if (data) {
-			setName(data?.user?.name)
-			setFrontendImage(data?.user?.image)
-		}
-	}, [data])
 
 	// function for handling image changes
 	function handleImageChange(event) {
@@ -42,6 +35,35 @@ export default function Edit() {
 		setFrontendImage(URL.createObjectURL(file))
 	}
 
+	// function for handling submit edit form and api fetching
+	async function handleSubmit(event) {
+		// preventing form's default behavior
+		event.preventDefault()
+
+		try {
+			// making formData for sending to api
+			const formData = new FormData()
+			formData.append('name', name)
+			if (backendImage) {
+				formData.append('file', backendImage)
+			}
+
+			// fetching edit api
+			const result = await axios.post('/api/edit', formData)
+			console.log(result)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	// useEfect declaration
+	useEffect(() => {
+		if (data) {
+			setName(data?.user?.name)
+			setFrontendImage(data?.user?.image)
+		}
+	}, [data])
+
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-black text-white px-4'>
 			<div className='w-full max-w-md border-2 border-white rounded-2xl p-8 shadow-lg text-center relative flex flex-col items-center justify-center'>
@@ -51,7 +73,10 @@ export default function Edit() {
 				</h1>
 
 				{/* edit form */}
-				<form className='flex flex-col w-full items-center gap-6'>
+				<form
+					onSubmit={handleSubmit}
+					className='flex flex-col w-full items-center gap-6'
+				>
 					{/* profile picture */}
 					<div
 						onClick={() => imageInput.current.click()}

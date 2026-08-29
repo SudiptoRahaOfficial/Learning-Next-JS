@@ -1,3 +1,4 @@
+import authOptions from '@/lib/auth'
 import uploadOnCloudinary from '@/lib/cloudinary'
 import connectDB from '@/lib/dbConnection'
 import User from '@/models/User.model'
@@ -10,13 +11,13 @@ export async function POST(request) {
 		await connectDB()
 
 		// extracting current session
-		const session = getServerSession()
+		const session = await getServerSession(authOptions)
 
 		// throwing error if session found or not
 		if (!session || !session.user.email || !session.user.id) {
 			return NextResponse.json(
-				{ message: 'unauthenticated user!' },
-				{ status: 400 },
+				{ message: 'Authentication required.' },
+				{ status: 401 },
 			)
 		}
 
@@ -45,12 +46,23 @@ export async function POST(request) {
 		if (!user) {
 			return NextResponse.json(
 				{ message: 'user not found!' },
-				{ status: 400 },
+				{ status: 404 },
 			)
 		}
 
 		// finally success response back
-		return NextResponse.json(user, { status: 400 })
+		return NextResponse.json(
+			{
+				message: 'Profile updated successfully.',
+				user: {
+					id: user._id,
+					name: user.name,
+					email: user.email,
+					image: user.image,
+				},
+			},
+			{ status: 200 },
+		)
 	} catch (error) {
 		return NextResponse.json(
 			{ message: `server error : ${error}` },
