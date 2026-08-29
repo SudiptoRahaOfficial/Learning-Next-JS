@@ -3,6 +3,7 @@ import Loader from '@/components/Loader'
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
+import { FaCircleUser } from 'react-icons/fa6'
 import { FaEdit } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
 
@@ -37,8 +38,8 @@ export default function Home() {
 						color='white'
 						className='absolute top-4 right-4 cursor-pointer'
 					/>
-					{data?.user?.image && (
-						<div className='relative w-30 h-30 rounded-full border-2 border-white overflow-hidden'>
+					<div className='relative w-30 h-30 rounded-full border-2 border-white overflow-hidden flex justify-center items-center cursor-pointer'>
+						{data?.user?.image ? (
 							<Image
 								src={data.user.image}
 								alt='user-image'
@@ -46,8 +47,13 @@ export default function Home() {
 								fill
 								sizes='120px'
 							/>
-						</div>
-					)}
+						) : (
+							<FaCircleUser
+								size={100}
+								color='white'
+							/>
+						)}
+					</div>
 					<div className='mt-4 mb-12'>
 						<h1 className='text-2xl font-semibold'>
 							Welcome, {data?.user?.name}
