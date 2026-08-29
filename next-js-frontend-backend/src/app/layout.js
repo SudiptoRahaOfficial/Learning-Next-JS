@@ -1,5 +1,6 @@
 import ClientProvider from '@/ClientProvider'
 import '../styles/globals.css'
+import UserContext from '@/context/UserContext'
 
 export const metadata = {
 	title: 'Learning Full-stack Next JS',
@@ -14,7 +15,9 @@ export default function RootLayout({ children }) {
 			className={`h-full antialiased`}
 		>
 			<body className='min-h-full flex flex-col'>
-				<ClientProvider>{children}</ClientProvider>
+				<ClientProvider>
+					<UserContext>{children}</UserContext>
+				</ClientProvider>
 			</body>
 		</html>
 	)
