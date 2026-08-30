@@ -36,7 +36,7 @@ function Register() {
 
 	// function for handling oAuth
 	async function handleOAuth() {
-		await signIn('google', { callbackUrl: '/auth/login' })
+		await signIn('google', { callbackUrl: '/' })
 	}
 
 	return (
