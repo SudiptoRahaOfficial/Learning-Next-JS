@@ -13,7 +13,7 @@ export async function GET(request) {
 		const session = await getServerSession(authOptions)
 
 		// throwing error if session found or not
-		if (!session || !session.user.email || !session.user.id) {
+		if (!session.user.email || !session.user.id) {
 			return NextResponse.json(
 				{ message: 'Authentication required.' },
 				{ status: 401 },

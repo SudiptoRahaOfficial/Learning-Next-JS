@@ -60,7 +60,7 @@ const authOptions = {
 		// function for jwt token generation
 		async jwt({ token, user }) {
 			if (user) {
-				token.id = user.id
+				token.id = user.id?.toString()
 				token.name = user.name
 				token.email = user.email
 				token.image = user.image
@@ -69,7 +69,7 @@ const authOptions = {
 		},
 
 		// function for making session
-		session({ session, token }) {
+		async session({ session, token }) {
 			if (session.user) {
 				session.user.id = token.id
 				session.user.name = token.name
@@ -80,22 +80,27 @@ const authOptions = {
 		},
 
 		// function for auto registration while log in with google
-		async signIn(account, user) {
+		async signIn({ account, user }) {
 			if (account?.provider === 'google') {
 				// connecting database
 				await connectDB()
 
 				// finding user to db by email
-				const existUser = await User.findOne({ email: user?.email })
+				let existUser = await User.findOne({ email: user?.email })
 
 				// if user not exists then creating new user
 				if (!existUser) {
-					let newUser = await User.create({
-						name: user?.name,
-						email: user?.email,
+					existUser = await User.create({
+						name: user.name,
+						email: user.email,
+						image: user.image,
 					})
 				}
-				user.id = existUser._id
+
+				user.id = existUser._id.toString()
+				user.name = existUser.name
+				user.email = existUser.email
+				user.image = existUser.image
 			}
 
 			return true
@@ -103,7 +108,7 @@ const authOptions = {
 	},
 	session: {
 		strategy: 'jwt',
-		maxAge: 3 * 24 * 60 * 60 * 1000,
+		maxAge: 3 * 24 * 60 * 60,
 	},
 	pages: {
 		signIn: '/login',
